@@ -1,44 +1,19 @@
 # 数据库结构
-user
-+----------+---------------------------+------+-----+---------+----------------+
-| Field    | Type                      | Null | Key | Default | Extra          |
-+----------+---------------------------+------+-----+---------+----------------+
-| id       | int                       | NO   | PRI | NULL    | auto_increment |
-| name     | varchar(50)               | YES  | UNI | NULL    |                |
-| password | varchar(50)               | YES  |     | NULL    |                |
-| state    | enum('oneline','offline') | YES  |     | offline |                |
-+----------+---------------------------+------+-----+---------+----------------+
 
-friend
-+----------+------+------+-----+---------+-------+
-| Field    | Type | Null | Key | Default | Extra |
-+----------+------+------+-----+---------+-------+
-| userid   | int  | NO   | MUL | NULL    |       |
-| friendid | int  | NO   |     | NULL    |       |
-+----------+------+------+-----+---------+-------+
+**user**
 
-allgroup
-+-----------+--------------+------+-----+---------+----------------+
-| Field     | Type         | Null | Key | Default | Extra          |
-+-----------+--------------+------+-----+---------+----------------+
-| id        | int          | NO   | PRI | NULL    | auto_increment |
-| groupname | varchar(50)  | NO   | UNI | NULL    |                |
-| groupdesc | varchar(200) | YES  |     |         |                |
-+-----------+--------------+------+-----+---------+----------------+
+![image-20250617153056514](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153056514.png)
+
+**friend**
+
+![image-20250617153112668](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153112668.png)
+
+**allgroup**
+![image-20250617153143046](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153143046.png)
 
 groupuser
-+-----------+--------------------------+------+-----+---------+-------+
-| Field     | Type                     | Null | Key | Default | Extra |
-+-----------+--------------------------+------+-----+---------+-------+
-| groupid   | int                      | NO   | MUL | NULL    |       |
-| userid    | int                      | NO   |     | NULL    |       |
-| grouprole | enum('creator','normal') | YES  |     | NULL    |       |
-+-----------+--------------------------+------+-----+---------+-------+
+![image-20250617153306597](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153306597.png)
 
-offlinemessage
-+---------+--------------+------+-----+---------+-------+
-| Field   | Type         | Null | Key | Default | Extra |
-+---------+--------------+------+-----+---------+-------+
-| userid  | int          | NO   |     | NULL    |       |
-| message | varchar(500) | NO   |     | NULL    |       |
-+---------+--------------+------+-----+---------+-------+
+**offlinemessage**
+
+![image-20250617153335252](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153335252.png)
