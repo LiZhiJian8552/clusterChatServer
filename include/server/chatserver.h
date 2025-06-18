@@ -17,7 +17,7 @@ private:
     // 与链接相关的回调
     void onConnection(const TcpConnectionPtr&);
     // 读写事件相关的回调
-    void onMessage(const TcpConnectionPtr&,Buffer*,Timestamp);
+    void onMessage(const TcpConnectionPtr& conn,Buffer*,Timestamp);
 
     TcpServer _server;
     EventLoop*_loop;
