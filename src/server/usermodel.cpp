@@ -6,7 +6,7 @@
 bool userModel::insert(User &user){
     // 1.组装sql语句
     char sql[1024]={0};
-    std::sprintf(sql,"insert into User(name,password,state) values('%s','%s','%s')",
+    std::sprintf(sql,"insert into user(name,password,state) values('%s','%s','%s')",
         user.getName().c_str(),user.getPwd().c_str(),user.getState().c_str());
     //2. 执行sql 
     MySQL mysql;

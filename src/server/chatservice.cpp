@@ -33,7 +33,29 @@ void ChatService::login(const TcpConnectionPtr&conn,json& js,Timestamp time){
 }
 // 处理注册业务
 void ChatService::reg(const TcpConnectionPtr&conn,json& js,Timestamp time){
-    LOG_INFO<<"do reg service!!!";
+    // 获取传入的数据
+    string name=js["name"];
+    string pwd=js["password"];
+    
+    User user;
+    user.setName(name);
+    user.setPwd(pwd);
+
+    bool state=_userModel.insert(user);
+    json response;
+    // 插入（注册）成功
+    if(state){
+        response["msgid"]=REG_MSG_ACK;
+        response["errno"]=0;
+        response["id"]=user.getId();
+    }else{  //插入（注册）失败
+        response["msgid"]=REG_MSG_ACK;
+        response["errno"]=1;
+        response["msg"]="register error!";
+        response["id"]=user.getId();
+    }
+    // 
+    conn->send(response.dump());
 }
 
 void ChatService::defaultHandler(const TcpConnectionPtr &conn, json &js, Timestamp time){

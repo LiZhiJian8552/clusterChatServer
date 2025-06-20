@@ -4,6 +4,7 @@
 #include<unordered_map>
 #include"json.hpp"
 #include<functional>
+#include"usermodel.h"
 using namespace muduo;
 using namespace muduo::net;
 using json=nlohmann::json;
@@ -29,4 +30,7 @@ private:
     std::unordered_map<int,MsgHandler> _msgHandlerMap;
     // 单例设计模式
     ChatService();
+
+    // 数据操作类对象
+    userModel _userModel;
 };
