@@ -45,14 +45,20 @@ void ChatService::login(const TcpConnectionPtr&conn,json& js,Timestamp time){
             response["message"]="该账号已经登录,不允许重复登录!";
             response["errno"]=2;
         }else{  //成功登录
+            {
+                // 登录成功之后记录用户连接信息
+                lock_guard<mutex> lock(_connMutex);
+                _userConnMap[user.getId()]=conn;
+            }
             // 更新用户状态信息 state offline=>online
             user.setState("online");
-
+            _userModel.updateState(user);
             // 构造返回信息
             response["msgid"]=LOGIN_MSG_ACK;
             response["errno"]=0;
             response["id"]=user.getId();
             response["name"]=user.getName();
+            
         }
     }else{  //登录失败
         response["msgid"]=LOGIN_MSG_ACK;
@@ -88,6 +94,29 @@ void ChatService::reg(const TcpConnectionPtr&conn,json& js,Timestamp time){
     conn->send(response.dump());
 }
 
+void ChatService::clinetCloseException(const TcpConnectionPtr& conn){
+    User user;
+    {
+        lock_guard<mutex> lock(_connMutex);
+        for(auto it=_userConnMap.begin();it!=_userConnMap.end();it++){
+            if(it->second==conn){
+                // 从map表种删除用户的连接信息
+                user.setId(it->first);
+                _userConnMap.erase(it);
+                break;
+            }
+        }
+    }
+    // 更新用户的状态信息
+    if(user.getId()!=-1){
+        user.setState("offline");
+        _userModel.updateState(user);
+    }
+}
+
+
 void ChatService::defaultHandler(const TcpConnectionPtr &conn, json &js, Timestamp time){
     LOG_ERROR<<"msgid can not find handler!";
 }
+
+
