@@ -25,6 +25,8 @@ public:
     void reg(const TcpConnectionPtr&conn,json& js,Timestamp time);
     // 没有对应的处理器时的默认处理器
     void defaultHandler(const TcpConnectionPtr& conn,json& js,Timestamp time);
+    // 一对一聊天业务
+    void oneChat(const TcpConnectionPtr& conn ,json & js,Timestamp time);
     // 处理客户端异常退出，修改用户状态
     void clinetCloseException(const TcpConnectionPtr& conn);
     // 获取消息对应的处理器

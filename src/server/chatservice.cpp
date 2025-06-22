@@ -16,6 +16,7 @@ ChatService::ChatService(){
     _msgHandlerMap.insert({DEFAULT_MSG,std::bind(&ChatService::defaultHandler,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
     _msgHandlerMap.insert({LOGIN_MSG,std::bind(&ChatService::login,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
     _msgHandlerMap.insert({REG_MSG,std::bind(&ChatService::reg,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
+    _msgHandlerMap.insert({ONE_CHAT_MSG,std::bind(&ChatService::oneChat,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
 }
 
 MsgHandler ChatService::getHandler(int msgid){
@@ -67,7 +68,7 @@ void ChatService::login(const TcpConnectionPtr&conn,json& js,Timestamp time){
     }
     conn->send(response.dump());
 }
-// 处理注册业务
+// 处理注册业务 {"msgid":2,"name":"wu","password":"123"} 
 void ChatService::reg(const TcpConnectionPtr&conn,json& js,Timestamp time){
     // 获取传入的数据
     string name=js["name"];
@@ -93,7 +94,7 @@ void ChatService::reg(const TcpConnectionPtr&conn,json& js,Timestamp time){
     // 
     conn->send(response.dump());
 }
-
+// 处理客户端异常关闭
 void ChatService::clinetCloseException(const TcpConnectionPtr& conn){
     User user;
     {
@@ -113,7 +114,27 @@ void ChatService::clinetCloseException(const TcpConnectionPtr& conn){
         _userModel.updateState(user);
     }
 }
+// 处理一对一聊天业务  {"msgid":3,"from":1,"to":2,"message":"hello"} 
+void ChatService::oneChat(const TcpConnectionPtr& conn ,json & js,Timestamp time){
+    // 获取 接受者id
+    int toid=js["to"].get<int>();
+    printLn();
+    //表示用户是否在线
+    {
+        //查询接收者conn
+        auto it=_userConnMap.find(toid);
+        // 
+        if(it!=_userConnMap.end()){ 
+            //toid在线，转发消息
+            it->second->send(js.dump());
+            printLn();
+            return ;
+        }
+    }
 
+    //不在线，存储离线消息
+    
+}
 
 void ChatService::defaultHandler(const TcpConnectionPtr &conn, json &js, Timestamp time){
     LOG_ERROR<<"msgid can not find handler!";
