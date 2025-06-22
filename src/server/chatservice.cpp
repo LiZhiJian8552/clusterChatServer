@@ -1,7 +1,9 @@
-#include"chatservice.h"
 #include<muduo/base/Logging.h>
+
+#include"chatservice.h"
 #include<string>
 #include"public.h"
+#include"utils.h"
 using namespace muduo;
 
 
@@ -27,9 +29,37 @@ MsgHandler ChatService::getHandler(int msgid){
     }
 }
 
-// 处理登录业务
+// 处理登录业务 id pwd {"msgid":1,"id":1,"password":"123456"} 
 void ChatService::login(const TcpConnectionPtr&conn,json& js,Timestamp time){
-    LOG_INFO<<"do login service!!!";
+    int id=js["id"];
+    string pwd=js["password"];
+
+    User user=_userModel.query(id);
+    show(user);
+    json response;
+    // 查询到账户
+    if(user.getId()!=-1&&user.getPwd()==pwd){
+        // 该用户已经登陆
+        if(user.getState()=="online"){
+            response["msgid"]=LOGIN_MSG_ACK;
+            response["message"]="该账号已经登录,不允许重复登录!";
+            response["errno"]=2;
+        }else{  //成功登录
+            // 更新用户状态信息 state offline=>online
+            user.setState("online");
+
+            // 构造返回信息
+            response["msgid"]=LOGIN_MSG_ACK;
+            response["errno"]=0;
+            response["id"]=user.getId();
+            response["name"]=user.getName();
+        }
+    }else{  //登录失败
+        response["msgid"]=LOGIN_MSG_ACK;
+        response["message"]="用户名或密码错误";
+        response["errno"]=1;
+    }
+    conn->send(response.dump());
 }
 // 处理注册业务
 void ChatService::reg(const TcpConnectionPtr&conn,json& js,Timestamp time){
