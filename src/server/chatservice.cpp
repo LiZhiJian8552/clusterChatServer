@@ -2,6 +2,7 @@
 #include<string>
 #include<vector>
 
+
 #include"chatservice.h"
 #include"public.h"
 #include"utils.h"
@@ -19,6 +20,7 @@ ChatService::ChatService(){
     _msgHandlerMap.insert({LOGIN_MSG,std::bind(&ChatService::login,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
     _msgHandlerMap.insert({REG_MSG,std::bind(&ChatService::reg,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
     _msgHandlerMap.insert({ONE_CHAT_MSG,std::bind(&ChatService::oneChat,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
+    _msgHandlerMap.insert({ADD_FRIEND_MSG,std::bind(&ChatService::addFriend,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
 }
 
 MsgHandler ChatService::getHandler(int msgid){
@@ -70,6 +72,20 @@ void ChatService::login(const TcpConnectionPtr&conn,json& js,Timestamp time){
                 response["offlinemsg"]=msg;
                 // 删除离线消息
                 _offlineMessageModel.remove(id);
+            }
+
+            // 查询该用户的好友信息并返回
+            std::vector<User> userVec=_friendModel.query(id);
+            if(!userVec.empty()){
+                std::vector<std::string> vec;
+                for(auto& user:userVec){
+                    json js;
+                    js["id"]=user.getId();
+                    js["name"]=user.getName();
+                    js["state"]=user.getState();
+                    vec.push_back(js.dump());
+                }
+                response["friends"]=vec;
             }
         }
     }else{  //登录失败
@@ -146,10 +162,22 @@ void ChatService::oneChat(const TcpConnectionPtr& conn ,json & js,Timestamp time
     _offlineMessageModel.insert(toid,js.dump());
 }
 
+// 添加好友 msgid id friendid {"msgid":4,"id":1,"friendid":2}
+void ChatService::addFriend(const TcpConnectionPtr& conn ,json & js,Timestamp time){
+    int userid=js["id"].get<int>();
+    int friendid=js["friendid"].get<int>();
+    
+    // 存储好友信息
+    _friendModel.insert(userid,friendid);
+}
+
+
 void ChatService::defaultHandler(const TcpConnectionPtr &conn, json &js, Timestamp time){
     LOG_ERROR<<"msgid can not find handler!";
 }
 
+
+// 重置用户状态
 void ChatService::reset(){
     // 更新所有用户的状态，将online->offline
     _userModel.resetState();

@@ -8,6 +8,7 @@
 #include"usermodel.h"
 #include"json.hpp"
 #include"offlinemessagemodel.h"
+#include"friendmodel.h"
 using namespace muduo;
 using namespace muduo::net;
 using json=nlohmann::json;
@@ -32,7 +33,8 @@ public:
     void clinetCloseException(const TcpConnectionPtr& conn);
     // 重置用户状态
     void reset();
-    
+    // 添加好友业务
+    void addFriend(const TcpConnectionPtr& conn ,json & js,Timestamp time);
     // 获取消息对应的处理器
     MsgHandler getHandler(int msgid);
 private:
@@ -49,4 +51,5 @@ private:
     // 数据操作类对象
     UserModel _userModel;
     OfflineMessageModel _offlineMessageModel;
+    FriendModel _friendModel;
 };
