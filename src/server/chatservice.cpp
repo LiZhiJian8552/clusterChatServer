@@ -150,4 +150,9 @@ void ChatService::defaultHandler(const TcpConnectionPtr &conn, json &js, Timesta
     LOG_ERROR<<"msgid can not find handler!";
 }
 
+void ChatService::reset(){
+    // 更新所有用户的状态，将online->offline
+    _userModel.resetState();
+}
+
 

@@ -81,7 +81,7 @@ User UserModel::query(int id){
     // 10. 查询失败或未找到用户，返回默认User对象
     return User();
 }
-
+// 更新用户的状态
 bool UserModel::updateState(User user){
     char sql[1024]={0};
     std::sprintf(sql,"update user set state='%s' where id =%d",user.getState().c_str(),user.getId());
@@ -93,4 +93,14 @@ bool UserModel::updateState(User user){
         }
     }
     return false;
+}
+
+// 重置用户的登录状态
+void UserModel::resetState(){
+    char sql[1024]="update user set state='offline' where state='online'";
+    
+    MySQL mysql;
+    if(mysql.connect()){
+        mysql.update(sql);
+    }
 }
