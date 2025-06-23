@@ -21,6 +21,9 @@ ChatService::ChatService(){
     _msgHandlerMap.insert({REG_MSG,std::bind(&ChatService::reg,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
     _msgHandlerMap.insert({ONE_CHAT_MSG,std::bind(&ChatService::oneChat,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
     _msgHandlerMap.insert({ADD_FRIEND_MSG,std::bind(&ChatService::addFriend,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
+    _msgHandlerMap.insert({CREATE_GROUP_MSG,std::bind(&ChatService::createGroup,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
+    _msgHandlerMap.insert({ADD_GROUP_MSG,std::bind(&ChatService::addGroup,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
+    _msgHandlerMap.insert({GROUP_CHAT_MSG,std::bind(&ChatService::groupChat,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)});
 }
 
 MsgHandler ChatService::getHandler(int msgid){
@@ -141,6 +144,8 @@ void ChatService::clinetCloseException(const TcpConnectionPtr& conn){
         _userModel.updateState(user);
     }
 }
+
+
 // 处理一对一聊天业务  {"msgid":3,"id":1,"from":"li","to":2,"message":"hello"} 
 void ChatService::oneChat(const TcpConnectionPtr& conn ,json & js,Timestamp time){
     // 获取 接受者id
@@ -161,6 +166,29 @@ void ChatService::oneChat(const TcpConnectionPtr& conn ,json & js,Timestamp time
     //不在线，存储离线消息
     _offlineMessageModel.insert(toid,js.dump());
 }
+// 群组聊天 {"msgid":3,"id":1,"from":"li","to":2,"message":"hello"} 
+void ChatService::groupChat(const TcpConnectionPtr& conn ,json & js,Timestamp time){
+    int userid=js["id"].get<int>();
+    int groupid=js["groupid"].get<int>();
+
+    // 查询该群组中其他人的id
+    vector<int> useridVec=_groupModel.queryGroupUsers(userid,groupid);
+    
+    lock_guard<mutex> lock(_connMutex);
+    // 像群组中每个人发送消息
+    for(int id:useridVec){
+        
+        auto it=_userConnMap.find(id);
+        // 在线直接转发
+        if(it!=_userConnMap.end()){
+            it->second->send(js.dump());
+        }else{
+            // 离线存储群消息
+            _offlineMessageModel.insert(id,js.dump());
+        }
+    }
+}
+
 
 // 添加好友 msgid id friendid {"msgid":4,"id":1,"friendid":2}
 void ChatService::addFriend(const TcpConnectionPtr& conn ,json & js,Timestamp time){
@@ -170,6 +198,29 @@ void ChatService::addFriend(const TcpConnectionPtr& conn ,json & js,Timestamp ti
     // 存储好友信息
     _friendModel.insert(userid,friendid);
 }
+
+
+// 创建群组业务 {"msgid":5,"id":1,"groupname":"","groupdesc":""}
+void ChatService::createGroup(const TcpConnectionPtr& conn ,json & js,Timestamp time){
+    int userid=js["id"].get<int>();
+    string name=js["groupname"];
+    string desc=js["groupdesc"]; 
+
+    // 存储新创建的群组信息
+    Group group(-1,name,desc);
+    if(_groupModel.createGroup(group)){
+        // 存储群组创建人信息
+        _groupModel.addGroup(userid,group.getId(),"creator");
+    }
+
+}
+// 加入群组业务 {"msgid":6,"id":2,"groupid":}
+void ChatService::addGroup(const TcpConnectionPtr& conn ,json & js,Timestamp time){
+    int userid=js["id"].get<int>();
+    int groupid=js["groupid"].get<int>();
+    _groupModel.addGroup(userid,groupid,"normal");
+}
+
 
 
 void ChatService::defaultHandler(const TcpConnectionPtr &conn, json &js, Timestamp time){

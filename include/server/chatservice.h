@@ -4,11 +4,14 @@
 #include<unordered_map>
 #include<functional>
 #include<mutex>
+#include<vector>
 
 #include"usermodel.h"
 #include"json.hpp"
 #include"offlinemessagemodel.h"
 #include"friendmodel.h"
+#include"groupmodel.h"
+
 using namespace muduo;
 using namespace muduo::net;
 using json=nlohmann::json;
@@ -21,20 +24,33 @@ class ChatService{
 public:
     // 获取单例对象的接口函数
     static ChatService* instance();
+    
     // 处理登录业务
     void login(const TcpConnectionPtr&conn,json& js,Timestamp time);
     // 处理注册业务
     void reg(const TcpConnectionPtr&conn,json& js,Timestamp time);
     // 没有对应的处理器时的默认处理器
     void defaultHandler(const TcpConnectionPtr& conn,json& js,Timestamp time);
+    
     // 一对一聊天业务
     void oneChat(const TcpConnectionPtr& conn ,json & js,Timestamp time);
+    // 群组聊天业务
+    void groupChat(const TcpConnectionPtr& conn ,json & js,Timestamp time);
+
     // 处理客户端异常退出，修改用户状态
     void clinetCloseException(const TcpConnectionPtr& conn);
     // 重置用户状态
     void reset();
+    
     // 添加好友业务
     void addFriend(const TcpConnectionPtr& conn ,json & js,Timestamp time);
+    
+    // 创建群组业务
+    void createGroup(const TcpConnectionPtr& conn ,json & js,Timestamp time);
+    // 加入群组业务
+    void addGroup(const TcpConnectionPtr& conn ,json & js,Timestamp time);
+     
+    
     // 获取消息对应的处理器
     MsgHandler getHandler(int msgid);
 private:
@@ -52,4 +68,5 @@ private:
     UserModel _userModel;
     OfflineMessageModel _offlineMessageModel;
     FriendModel _friendModel;
+    GroupModel _groupModel;
 };
