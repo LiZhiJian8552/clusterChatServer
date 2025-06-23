@@ -7,6 +7,7 @@
 
 #include"usermodel.h"
 #include"json.hpp"
+#include"offlinemessagemodel.h"
 using namespace muduo;
 using namespace muduo::net;
 using json=nlohmann::json;
@@ -43,5 +44,6 @@ private:
     std::unordered_map<int,TcpConnectionPtr> _userConnMap;
 
     // 数据操作类对象
-    userModel _userModel;
+    UserModel _userModel;
+    OfflineMessageModel _offlineMessageModel;
 };

@@ -1,9 +1,11 @@
 #include<muduo/base/Logging.h>
+#include<string>
+#include<vector>
 
 #include"chatservice.h"
-#include<string>
 #include"public.h"
 #include"utils.h"
+
 using namespace muduo;
 
 
@@ -60,6 +62,15 @@ void ChatService::login(const TcpConnectionPtr&conn,json& js,Timestamp time){
             response["id"]=user.getId();
             response["name"]=user.getName();
             
+            // 查询该用户是否有离线消息
+            std::vector<std::string> msg=_offlineMessageModel.query(id);
+            
+            // 如果有离线消息
+            if(!msg.empty()){
+                response["offlinemsg"]=msg;
+                // 删除离线消息
+                _offlineMessageModel.remove(id);
+            }
         }
     }else{  //登录失败
         response["msgid"]=LOGIN_MSG_ACK;
@@ -114,11 +125,11 @@ void ChatService::clinetCloseException(const TcpConnectionPtr& conn){
         _userModel.updateState(user);
     }
 }
-// 处理一对一聊天业务  {"msgid":3,"from":1,"to":2,"message":"hello"} 
+// 处理一对一聊天业务  {"msgid":3,"id":1,"from":"li","to":2,"message":"hello"} 
 void ChatService::oneChat(const TcpConnectionPtr& conn ,json & js,Timestamp time){
     // 获取 接受者id
     int toid=js["to"].get<int>();
-    printLn();
+    
     //表示用户是否在线
     {
         //查询接收者conn
@@ -127,13 +138,12 @@ void ChatService::oneChat(const TcpConnectionPtr& conn ,json & js,Timestamp time
         if(it!=_userConnMap.end()){ 
             //toid在线，转发消息
             it->second->send(js.dump());
-            printLn();
+            
             return ;
         }
     }
-
     //不在线，存储离线消息
-    
+    _offlineMessageModel.insert(toid,js.dump());
 }
 
 void ChatService::defaultHandler(const TcpConnectionPtr &conn, json &js, Timestamp time){

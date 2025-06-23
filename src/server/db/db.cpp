@@ -24,7 +24,7 @@ bool MySQL::connect(){
     MYSQL* p=mysql_real_connect(_conn,server.c_str(),user.c_str(),password.c_str(),dbname.c_str(),3306,nullptr,0);
     if(p!=nullptr){
         // 设置编码，支持中文
-        mysql_query(_conn,"set names gdk");
+        mysql_query(_conn,"set names utf8mb4");
         LOG_INFO<<"connect mysql sucess!";
     }else{
         LOG_INFO<<"connect mysql fail!";

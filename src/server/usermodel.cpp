@@ -3,7 +3,7 @@
 #include<iostream>
 #include <muduo/base/Logging.h>
 // 插入用户信息到数据库
-bool userModel::insert(User &user){
+bool UserModel::insert(User &user){
     // 1. 组装SQL插入语句，将用户的name、password、state插入user表
     char sql[1024]={0}; // 定义SQL语句缓冲区并初始化为0
     std::sprintf(sql,"insert into user(name,password,state) values('%s','%s','%s')",
@@ -47,7 +47,7 @@ bool userModel::insert(User &user){
  * @param id 需要查询的用户ID
  * @return User 查询到的用户对象，若未找到则返回空对象
  */
-User userModel::query(int id){
+User UserModel::query(int id){
     // 1. 组装SQL查询语句，查找指定id的用户
     char sql[1024]={0}; // 定义SQL语句缓冲区
     std::sprintf(sql,"select * from user where id =%d",id); // 格式化SQL语句
@@ -82,7 +82,7 @@ User userModel::query(int id){
     return User();
 }
 
-bool userModel::updateState(User user){
+bool UserModel::updateState(User user){
     char sql[1024]={0};
     std::sprintf(sql,"update user set state='%s' where id =%d",user.getState().c_str(),user.getId());
     

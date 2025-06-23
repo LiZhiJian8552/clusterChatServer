@@ -2,7 +2,7 @@
 #include<user.h>
 
 // user表的数据操作类
-class userModel{
+class UserModel{
 public:
     // 向User表中添加
     bool insert(User& user);
