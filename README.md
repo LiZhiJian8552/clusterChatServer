@@ -1,19 +1,49 @@
-# 数据库结构
+# 即时通讯系统数据库结构
 
-**user**
+该文档描述了即时通讯系统中使用的数据库结构。
 
-![image-20250617153056514](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153056514.png)
+## 数据表
 
-**friend**
+### user 表
+存储用户信息
 
-![image-20250617153112668](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153112668.png)
+| 字段名      | 类型         | 描述       |
+|-----------|--------------|------------|
+| id        | INT          | 用户ID (主键) |
+| name      | VARCHAR(50)  | 用户名      |
+| password  | VARCHAR(50)  | 密码       |
+| state     | VARCHAR(10)  | 状态 (默认'offline') |
 
-**allgroup**
-![image-20250617153143046](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153143046.png)
+### friend 表
+存储好友关系信息
 
-groupuser
-![image-20250617153306597](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153306597.png)
+| 字段名      | 类型        | 描述        |
+|-----------|-------------|-------------|
+| userid    | INT         | 用户ID (外键) |
+| friendid  | INT         | 好友ID (外键) |
 
-**offlinemessage**
+### offlineMessage 表
+存储离线消息
 
-![image-20250617153335252](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/image-20250617153335252.png)
+| 字段名      | 类型          | 描述         |
+|-----------|---------------|--------------|
+| userid    | INT           | 用户ID (外键) |
+| message   | VARCHAR(1024) | 消息内容      |
+
+### allgroup 表
+存储群组信息
+
+| 字段名      | 类型         | 描述        |
+|-----------|--------------|------------|
+| id        | INT          | 群组ID (主键) |
+| groupname | VARCHAR(50)  | 群组名称     |
+| groupdesc | VARCHAR(200) | 群组描述     |
+
+### groupuser 表
+存储群组用户关系信息
+
+| 字段名      | 类型         | 描述         |
+|-----------|--------------|--------------|
+| groupid   | INT          | 群组ID (外键) |
+| userid    | INT          | 用户ID (外键) |
+| role      | VARCHAR(10)  | 角色          |
