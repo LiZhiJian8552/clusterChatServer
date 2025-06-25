@@ -1,5 +1,6 @@
 #include"groupmodel.h"
 #include"db.h"
+#include"utils.h"
 
 // 创建群组
 bool GroupModel::createGroup(Group& group){
@@ -7,11 +8,10 @@ bool GroupModel::createGroup(Group& group){
     std::sprintf(sql,"insert into allgroup(groupname,groupdesc) values('%s','%s')",group.getName().c_str(),group.getDesc().c_str());
     MySQL mysql;
     if(mysql.connect()){
-        if(mysql.query(sql)){
-            // mysql_insert_id获取该连接自动插入的id
-            group.setId(mysql_insert_id(mysql.getConnection()));
-            return true;
-        }
+        mysql.query(sql);
+        // mysql_insert_id获取该连接自动插入的id
+        group.setId(mysql_insert_id(mysql.getConnection()));
+        return true;
     }    
     return false;
 }
@@ -46,7 +46,7 @@ std::vector<Group> GroupModel::queryGroups(int userid){
 
         // 查询群组的用户信息
         for(auto& group:groupsVec){
-            sprintf(sql,"select user.id,user.name,user.state,groupuser.grouprole from groupuser inner user on groupuser.userid = user.id where groupuser.groupid=%d",group.getId());
+            sprintf(sql,"select user.id,user.name,user.state,groupuser.grouprole from groupuser inner join user on groupuser.userid = user.id where groupuser.groupid=%d",group.getId());
             MYSQL_RES * res=mysql.query(sql);
             if(res!=nullptr){
                 MYSQL_ROW row;

@@ -49,7 +49,9 @@ public:
     void createGroup(const TcpConnectionPtr& conn ,json & js,Timestamp time);
     // 加入群组业务
     void addGroup(const TcpConnectionPtr& conn ,json & js,Timestamp time);
-     
+    
+    // 注销登录
+    void loginout(const TcpConnectionPtr& conn ,json & js,Timestamp time);
     
     // 获取消息对应的处理器
     MsgHandler getHandler(int msgid);

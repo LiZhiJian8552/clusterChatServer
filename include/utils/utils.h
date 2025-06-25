@@ -3,10 +3,10 @@
 #include<iostream>
 using namespace std;
 
-void show(User user){
+inline void show(User user){
     cout<<user.getId()<<"--"<<user.getName()<<"--"<<user.getPwd()<<"--"<<user.getState()<<endl;
 }
 
-void printLn(){
+inline void printLn(){
     cout<<"----------------"<<endl;
 }

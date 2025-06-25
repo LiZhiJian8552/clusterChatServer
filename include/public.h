@@ -17,7 +17,8 @@ enum EnMsgType{
     CREATE_GROUP_MSG,   //创建群组
     ADD_GROUP_MSG,      //加入群组
     GROUP_CHAT_MSG,     //群聊天 
-      
+     
+    LOGINOUT_MSG,       //注销登录
     REG_MSG_ACK,        //注册响应消息
     LOGIN_MSG_ACK       //登录响应消息
 };
