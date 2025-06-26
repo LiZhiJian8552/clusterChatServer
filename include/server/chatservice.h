@@ -6,6 +6,7 @@
 #include<mutex>
 #include<vector>
 
+#include"redis.h"
 #include"usermodel.h"
 #include"json.hpp"
 #include"offlinemessagemodel.h"
@@ -53,6 +54,9 @@ public:
     // 注销登录
     void loginout(const TcpConnectionPtr& conn ,json & js,Timestamp time);
     
+    // 从redis消息队列中获取订阅的消息
+    void handleRedisSubscribeMessage(int userid,string msg);
+
     // 获取消息对应的处理器
     MsgHandler getHandler(int msgid);
 private:
@@ -71,4 +75,6 @@ private:
     OfflineMessageModel _offlineMessageModel;
     FriendModel _friendModel;
     GroupModel _groupModel;
+    // redis操作对象
+    Redis _redis;
 };

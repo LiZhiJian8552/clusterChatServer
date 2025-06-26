@@ -1,3 +1,7 @@
+# 集群聊天服务器最终实现效果
+
+![screenshots](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/screenshots.gif)
+
 # 即时通讯系统数据库结构
 
 该文档描述了即时通讯系统中使用的数据库结构。
