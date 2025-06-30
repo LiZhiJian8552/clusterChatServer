@@ -54,7 +54,7 @@ void ChatService::login(const TcpConnectionPtr&conn,json& js,Timestamp time){
     string pwd=js["password"];
 
     User user=_userModel.query(id);
-    show(user);
+    
     json response;
     // 查询到账户
     if(user.getId()!=-1&&user.getPwd()==pwd){

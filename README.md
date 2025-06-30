@@ -11,9 +11,9 @@
 - 用户离线消息存储与读取
 - 用户登录状态管理
 
-
 ## 最终实现效果
-![screenshots](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/screenshots.gif)
+
+![screenshots1](https://wu-zhouzhou.oss-cn-qingdao.aliyuncs.com/img_for_typora/screenshots1.gif)
 
 ## 数据库结构
 本项目使用MySQL数据库，主要数据表包括：
